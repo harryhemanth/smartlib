@@ -1,0 +1,137 @@
+-- SmartLib AI – Database Schema (SQLite Local & MySQL Production Reference)
+-- Note: For MySQL 8+, replace `INTEGER PRIMARY KEY AUTOINCREMENT` with `BIGINT AUTO_INCREMENT PRIMARY KEY`
+-- and `TEXT` datetime defaults with `DATETIME DEFAULT CURRENT_TIMESTAMP`.
+
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  full_name VARCHAR(160) NOT NULL,
+  email VARCHAR(190) NOT NULL UNIQUE,
+  student_id VARCHAR(64) UNIQUE,
+  department VARCHAR(120) NOT NULL DEFAULT 'Computer Science',
+  year_of_study VARCHAR(40) NOT NULL DEFAULT '3rd Year',
+  role VARCHAR(20) NOT NULL DEFAULT 'student',
+  password_hash VARCHAR(255) NOT NULL,
+  avatar_url VARCHAR(255),
+  status VARCHAR(20) NOT NULL DEFAULT 'active',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  last_login_at DATETIME
+);
+
+CREATE TABLE IF NOT EXISTS categories (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name VARCHAR(120) NOT NULL UNIQUE,
+  code VARCHAR(32) NOT NULL UNIQUE,
+  description TEXT NOT NULL,
+  shelf_prefix VARCHAR(32) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS books (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title VARCHAR(255) NOT NULL,
+  author VARCHAR(255) NOT NULL,
+  isbn VARCHAR(32) NOT NULL UNIQUE,
+  category_id INTEGER NOT NULL,
+  department VARCHAR(120) NOT NULL,
+  subject VARCHAR(120) NOT NULL,
+  publisher VARCHAR(160) NOT NULL DEFAULT 'Academic Press',
+  publish_year INTEGER NOT NULL DEFAULT 2024,
+  total_copies INTEGER NOT NULL DEFAULT 1,
+  available_copies INTEGER NOT NULL DEFAULT 1,
+  shelf_location VARCHAR(120) NOT NULL,
+  description TEXT NOT NULL,
+  cover_url VARCHAR(255),
+  qr_code_data VARCHAR(160) NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+CREATE TABLE IF NOT EXISTS loans (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  book_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  issued_by INTEGER,
+  issue_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  due_date DATETIME NOT NULL,
+  return_date DATETIME,
+  status VARCHAR(20) NOT NULL DEFAULT 'borrowed',
+  renewal_count INTEGER NOT NULL DEFAULT 0,
+  notes TEXT,
+  FOREIGN KEY (book_id) REFERENCES books(id),
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (issued_by) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS reservations (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  book_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  reserved_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  expires_at DATETIME NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'active',
+  FOREIGN KEY (book_id) REFERENCES books(id),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS digital_resources (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title VARCHAR(255) NOT NULL,
+  author VARCHAR(160) NOT NULL,
+  department VARCHAR(120) NOT NULL,
+  subject VARCHAR(120) NOT NULL,
+  resource_type VARCHAR(32) NOT NULL DEFAULT 'pdf',
+  file_name VARCHAR(255) NOT NULL,
+  file_size_kb INTEGER NOT NULL DEFAULT 420,
+  access_role VARCHAR(20) NOT NULL DEFAULT 'all',
+  download_count INTEGER NOT NULL DEFAULT 0,
+  description TEXT NOT NULL,
+  content_summary TEXT NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS chat_history (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  session_id VARCHAR(64) NOT NULL,
+  role VARCHAR(20) NOT NULL,
+  message TEXT NOT NULL,
+  agent_used VARCHAR(80),
+  ai_mode VARCHAR(20) NOT NULL DEFAULT 'offline',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS notifications (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  title VARCHAR(180) NOT NULL,
+  message TEXT NOT NULL,
+  type VARCHAR(32) NOT NULL DEFAULT 'info',
+  is_read INTEGER NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS admin_activity (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  actor_id INTEGER,
+  actor_email VARCHAR(190) NOT NULL,
+  action VARCHAR(80) NOT NULL,
+  entity_type VARCHAR(60) NOT NULL,
+  entity_id VARCHAR(64),
+  details TEXT NOT NULL,
+  ip_address VARCHAR(64) NOT NULL DEFAULT '127.0.0.1',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (actor_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS login_activity (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  email VARCHAR(190) NOT NULL,
+  role VARCHAR(20) NOT NULL,
+  ip_address VARCHAR(64) NOT NULL DEFAULT '127.0.0.1',
+  user_agent VARCHAR(200) NOT NULL DEFAULT 'Browser',
+  status VARCHAR(20) NOT NULL DEFAULT 'success',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);

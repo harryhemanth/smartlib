@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Iowan Old Style", "Source Serif 4", "Palatino Linotype", Palatino, "Book Antiqua", Baskerville, Georgia, serif;
+  --font-sans: "Iowan Old Style", "Source Serif 4", "Palatino Linotype", Palatino, "Book Antiqua", Baskerville, Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    background-color: #211e18;
+    color: #eee2ca;
+    scroll-behavior: smooth;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.shader-frame {
+  position: relative;
+  width: 100%;
+  height: calc(100svh - 64px);
+  min-height: 680px;
+  overflow: hidden;
+  background: #29251d;
+}
+
+.field-stage {
+  background:
+    radial-gradient(circle at 82% 8%, rgba(195, 164, 123, 0.08), transparent 36%),
+    radial-gradient(circle at 12% 88%, rgba(137, 148, 111, 0.07), transparent 34%),
+    #211e18;
+}
+
+/* Crisp custom scrollbars for warm dark umber theme */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1d1a15;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(195, 164, 123, 0.32);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(219, 195, 156, 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

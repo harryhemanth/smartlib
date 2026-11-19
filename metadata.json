@@ -1,0 +1,6 @@
+{
+  "name": "SmartLib AI – Intelligent College Library Agent",
+  "description": "Multi-agent intelligent college library management platform with Online Gemini AI and Offline NLP modes, real-time circulation, digital archives, and role-based dashboards.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
